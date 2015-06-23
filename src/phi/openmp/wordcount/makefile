@@ -1,7 +1,7 @@
 OBJS = main.o
 CC = g++
 DEBUG = 
-CFLAGS = $(DEBUG) -std=c++11
+CFLAGS = $(DEBUG) -std=c++0x
 LIBS = -fopenmp -lm
 OUT = wc
 
