@@ -19,6 +19,5 @@ mm.o: mm.c
 mm-ijk.o: mm-ijk.c
 	$(CC) -c $(CFLAGS) mm-ijk.c $(LIBS)
 
-
 clean:
-	rm -rf *o $(OUT)
+	rm -rf *o $(OUT) $(OUT2)

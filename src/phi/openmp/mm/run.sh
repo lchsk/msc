@@ -23,18 +23,9 @@ fi
 
 echo "Running $app, $iter iteration(s), $3 thread(s)"
 
-#$(for run in {1..echo $iter}
-# grep "Time.*" | grep -o "[0-9.]\+" | xargs | tr ' ' + | bc)"
-
 for i in `seq 1 $iter`;
 do
   ./"$app"
 done | grep "Time.*" | grep -o "[0-9.]\+" | awk 'BEGIN { s = 0 } { s = s + $0; n++ } END { printf "%.2f", s / n }'
 
-
-# result=$(awk "BEGIN {printf \"%.2f\",${s}/${iter}}")
-
-# echo $sum
-
-# echo $result
 echo

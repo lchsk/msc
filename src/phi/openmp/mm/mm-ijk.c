@@ -60,15 +60,8 @@ int main (int argc, char *argv[])
 
         #pragma omp for schedule (static, chunk)
         for (i = 0; i < A_ROWS; i++)
-        {
-            for(j = 0; j < B_COLS; j++)
-            {
-                for (k = 0; k < A_COLS; k++)
-                {
-                    c[i][j] += a[i][k] * b[k][j];
-                }
-            }
-        }
+            for (k = 0; k < A_COLS; k++)
+                c[i][j] += a[i][k] * b[k][j];
     }
 
     // Results

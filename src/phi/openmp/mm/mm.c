@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// 700 500 400
+
 #define A_ROWS 700
 #define A_COLS 500
 #define B_COLS 400
@@ -36,15 +38,12 @@ int main (int argc, char *argv[])
             else
                 nthreads = atoi(argv[1]);
 
-            
-            
             printf("Matrix multiplication, %d threads\n", nthreads);
         }
 
         // Initialisation
 
         #pragma omp for schedule (static, chunk)
-        omp_set_num_threads(nthreads);
         for (i = 0; i < A_ROWS; i++)
             for (j = 0; j < A_COLS; j++)
               a[i][j] = rand() % 1000;
@@ -76,15 +75,6 @@ int main (int argc, char *argv[])
             }
         }
     }
-
-    // Results
-
-    // for (i = 0; i < A_ROWS; i++)
-    // {
-    //     for (j = 0; j < B_COLS; j++)
-    //         printf("%6.2f\t", c[i][j]);
-    //     printf("\n");
-    // }
 
     printf("Time: %f ms\n", (omp_get_wtime() - t) * 1000);
 }
