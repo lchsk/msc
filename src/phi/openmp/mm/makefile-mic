@@ -1,0 +1,18 @@
+OBJS = mm.o
+CC = icc
+DEBUG = 
+CFLAGS = $(DEBUG) -mmic
+LIBS = -fopenmp
+OUT = mm
+
+all: $(OUT)
+
+mm: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(OUT) $(LIBS)
+
+mm.o: mm.c
+	$(CC) -c $(CFLAGS) mm.c $(LIBS)
+
+
+clean:
+	rm -rf *o $(OUT)
