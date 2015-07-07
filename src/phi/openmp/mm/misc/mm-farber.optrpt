@@ -1,0 +1,209 @@
+
+Begin optimization report for: main(int, char **)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at mm-farber.c(139,5)
+   remark #15382: vectorization support: call to function doMult(int, float (*__restrict__)[*], float (*__restrict__)[*], float (*__restrict__)[*]) cannot be vectorized   [ mm-farber.c(140,7) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+LOOP END
+
+LOOP BEGIN at mm-farber.c(126,3)
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at mm-farber.c(127,5)
+   <Peeled>
+   LOOP END
+
+   LOOP BEGIN at mm-farber.c(127,5)
+      remark #15389: vectorization support: reference A has unaligned access   [ mm-farber.c(128,7) ]
+      remark #15389: vectorization support: reference B has unaligned access   [ mm-farber.c(129,7) ]
+      remark #15388: vectorization support: reference A has aligned access   [ mm-farber.c(128,7) ]
+      remark #15388: vectorization support: reference B has aligned access   [ mm-farber.c(129,7) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 2 
+      remark #15451: unmasked unaligned unit stride stores: 2 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 28 
+      remark #15477: vector loop cost: 7.000 
+      remark #15478: estimated potential speedup: 3.780 
+      remark #15479: lightweight vector operations: 23 
+      remark #15480: medium-overhead vector operations: 1 
+      remark #15487: type converts: 4 
+      remark #15488: --- end vector loop cost summary ---
+   LOOP END
+
+   LOOP BEGIN at mm-farber.c(127,5)
+   <Alternate Alignment Vectorized Loop>
+   LOOP END
+
+   LOOP BEGIN at mm-farber.c(127,5)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mm-farber.c(126,3)
+<Remainder>
+   remark #15542: loop was not vectorized: inner loop was already vectorized
+
+   LOOP BEGIN at mm-farber.c(127,5)
+   <Peeled>
+   LOOP END
+
+   LOOP BEGIN at mm-farber.c(127,5)
+      remark #15388: vectorization support: reference A has aligned access   [ mm-farber.c(128,7) ]
+      remark #15388: vectorization support: reference B has aligned access   [ mm-farber.c(129,7) ]
+      remark #15399: vectorization support: unroll factor set to 2
+      remark #15300: LOOP WAS VECTORIZED
+      remark #15442: entire loop may be executed in remainder
+      remark #15449: unmasked aligned unit stride stores: 2 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 14 
+      remark #15477: vector loop cost: 3.000 
+      remark #15478: estimated potential speedup: 4.340 
+      remark #15479: lightweight vector operations: 12 
+      remark #15487: type converts: 2 
+      remark #15488: --- end vector loop cost summary ---
+   LOOP END
+
+   LOOP BEGIN at mm-farber.c(127,5)
+   <Alternate Alignment Vectorized Loop>
+   LOOP END
+
+   LOOP BEGIN at mm-farber.c(127,5)
+   <Remainder>
+      remark #15389: vectorization support: reference A has unaligned access   [ mm-farber.c(128,7) ]
+      remark #15388: vectorization support: reference B has aligned access   [ mm-farber.c(129,7) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15301: REMAINDER LOOP WAS VECTORIZED
+   LOOP END
+
+   LOOP BEGIN at mm-farber.c(127,5)
+   <Remainder>
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: doCheck(int, float (*__restrict__)[*], float (*__restrict__)[*], float (*__restrict__)[*], int, float *)
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at mm-farber.c(87,3)
+   remark #15382: vectorization support: call to function sgemm(const char *, const char *, const int *, const int *, const int *, const float *, const float *, const int *, const float *, const int *, const float *, float *, const int *) cannot be vectorized   [ mm-farber.c(88,5) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+LOOP END
+
+LOOP BEGIN at mm-farber.c(75,3)
+   remark #15389: vectorization support: reference A has unaligned access   [ mm-farber.c(77,7) ]
+   remark #15389: vectorization support: reference B has unaligned access   [ mm-farber.c(78,7) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15450: unmasked unaligned unit stride loads: 2 
+   remark #15462: unmasked indexed (or gather) loads: 2 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 7 
+   remark #15477: vector loop cost: 18.250 
+   remark #15478: estimated potential speedup: 0.380 
+   remark #15479: lightweight vector operations: 5 
+   remark #15481: heavy-overhead vector operations: 2 
+   remark #15488: --- end vector loop cost summary ---
+
+   LOOP BEGIN at mm-farber.c(76,5)
+      remark #15389: vectorization support: reference At has unaligned access   [ mm-farber.c(77,7) ]
+      remark #15389: vectorization support: reference Bt has unaligned access   [ mm-farber.c(78,7) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15451: unmasked unaligned unit stride stores: 2 
+      remark #15460: masked strided loads: 2 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 7 
+      remark #15477: vector loop cost: 18.500 
+      remark #15478: estimated potential speedup: 0.370 
+      remark #15479: lightweight vector operations: 3 
+      remark #15480: medium-overhead vector operations: 1 
+      remark #15481: heavy-overhead vector operations: 2 
+      remark #15488: --- end vector loop cost summary ---
+   LOOP END
+
+   LOOP BEGIN at mm-farber.c(76,5)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mm-farber.c(94,3)
+   remark #15389: vectorization support: reference Ct has unaligned access   [ mm-farber.c(96,7) ]
+   remark #15381: vectorization support: unaligned access used inside loop body
+   remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+   remark #15450: unmasked unaligned unit stride loads: 1 
+   remark #15462: unmasked indexed (or gather) loads: 1 
+   remark #15475: --- begin vector loop cost summary ---
+   remark #15476: scalar loop cost: 4 
+   remark #15477: vector loop cost: 9.250 
+   remark #15478: estimated potential speedup: 0.430 
+   remark #15479: lightweight vector operations: 3 
+   remark #15481: heavy-overhead vector operations: 1 
+   remark #15488: --- end vector loop cost summary ---
+
+   LOOP BEGIN at mm-farber.c(95,5)
+      remark #15389: vectorization support: reference Cgemm has unaligned access   [ mm-farber.c(96,7) ]
+      remark #15381: vectorization support: unaligned access used inside loop body
+      remark #15335: loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+      remark #15451: unmasked unaligned unit stride stores: 1 
+      remark #15460: masked strided loads: 1 
+      remark #15475: --- begin vector loop cost summary ---
+      remark #15476: scalar loop cost: 4 
+      remark #15477: vector loop cost: 9.250 
+      remark #15478: estimated potential speedup: 0.430 
+      remark #15479: lightweight vector operations: 1 
+      remark #15480: medium-overhead vector operations: 1 
+      remark #15481: heavy-overhead vector operations: 1 
+      remark #15488: --- end vector loop cost summary ---
+   LOOP END
+
+   LOOP BEGIN at mm-farber.c(95,5)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at mm-farber.c(48,5) inlined into mm-farber.c(98,12)
+   remark #15382: vectorization support: call to function __kmpc_critical cannot be vectorized   [ mm-farber.c(53,7) ]
+   remark #15382: vectorization support: call to function __kmpc_end_critical cannot be vectorized   [ mm-farber.c(55,7) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between M1_12929 line 50 and  line 55
+   remark #15346: vector dependence: assumed FLOW dependence between  line 55 and M1_12929 line 50
+
+   LOOP BEGIN at mm-farber.c(49,7) inlined into mm-farber.c(98,12)
+      remark #15382: vectorization support: call to function __kmpc_critical cannot be vectorized   [ mm-farber.c(53,7) ]
+      remark #15382: vectorization support: call to function __kmpc_end_critical cannot be vectorized   [ mm-farber.c(55,7) ]
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed ANTI dependence between M1_12929 line 50 and  line 55
+      remark #15346: vector dependence: assumed FLOW dependence between  line 55 and M1_12929 line 50
+   LOOP END
+LOOP END
+===========================================================================
+
+Begin optimization report for: nrmsdError(int, float (*__restrict__)[*], float (*__restrict__)[*])
+
+    Report from: Vector optimizations [vec]
+
+
+LOOP BEGIN at mm-farber.c(48,5)
+   remark #15382: vectorization support: call to function __kmpc_critical cannot be vectorized   [ mm-farber.c(53,7) ]
+   remark #15382: vectorization support: call to function __kmpc_end_critical cannot be vectorized   [ mm-farber.c(55,7) ]
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization
+   remark #15346: vector dependence: assumed ANTI dependence between M1 line 50 and  line 55
+   remark #15346: vector dependence: assumed FLOW dependence between  line 55 and M1 line 50
+
+   LOOP BEGIN at mm-farber.c(49,7)
+      remark #15382: vectorization support: call to function __kmpc_critical cannot be vectorized   [ mm-farber.c(53,7) ]
+      remark #15382: vectorization support: call to function __kmpc_end_critical cannot be vectorized   [ mm-farber.c(55,7) ]
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization
+      remark #15346: vector dependence: assumed ANTI dependence between M1 line 50 and  line 55
+      remark #15346: vector dependence: assumed FLOW dependence between  line 55 and M1 line 50
+   LOOP END
+LOOP END
+===========================================================================
