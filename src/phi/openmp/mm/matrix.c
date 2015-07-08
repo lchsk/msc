@@ -3,7 +3,7 @@
 #include <omp.h>
 // #include <mkl.h>
 #include <time.h>
-
+// #include <cilk/cilk.h>
 #include "helper.h"
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -147,8 +147,13 @@ m_elem_fun(int size, DTYPE** A, DTYPE** B, DTYPE** C)
         for (int k = 0; k < size; ++k)
         {
             DTYPE* v = B[k];
-
             mul_vect(&u[k], &v[0:size], &r[0:size]);
+
+            // Cilk - useless
+            // cilk_for (int j = 0; j < size; ++j) {
+            // mul_vect(&u[k], &v[j], &r[j]);
+            // }
+
 
             // mul_vect(&u[0:size], &v[0:size], &r[0:size]);
             // for (int j = 0; j < size; ++j)

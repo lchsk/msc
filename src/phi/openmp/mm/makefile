@@ -1,16 +1,24 @@
-OBJS = mm.o
-OBJS2 = mm-ijk.o
 CC = icc
 DEBUG =
-CFLAGS = $(DEBUG) -O3 -Ofast
+CFLAGS = -O3 -Ofast
+
 LIBS = -fopenmp
-OUT = mm
-OUT2 = mm-ijk
+LIBS_MIC = -fopenmp
 
-all: mm
+STD = -std=c99
 
-mm:
-	$(CC) helper.c matrix.c -o matrix -O2 -fopenmp -std=c99
+FILES = helper.c matrix.c
+
+OUT = matrix
+OUT_MIC = matrix-mic
+
+all: $(OUT) $(OUT_MIC)
+
+$(OUT):
+	$(CC) $(FILES) -o $(OUT) $(CFLAGS) $(LIBS) $(STD)
+
+$(OUT_MIC):
+		$(CC) $(FILES) -o $(OUT_MIC) $(CFLAGS) $(LIBS_MIC) -mmic $(STD)
 
 clean:
-	rm -rf *o
+	rm -rf *o $(OUT) $(OUT_MIC)
