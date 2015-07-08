@@ -1,23 +1,16 @@
 OBJS = mm.o
 OBJS2 = mm-ijk.o
 CC = icc
-DEBUG = 
+DEBUG =
 CFLAGS = $(DEBUG) -O3 -Ofast
 LIBS = -fopenmp
 OUT = mm
 OUT2 = mm-ijk
 
-all: $(OUT)
+all: mm
 
-mm: $(OBJS) $(OBJS2)
-	$(CC) $(CFLAGS) $(OBJS) -o $(OUT) $(LIBS)
-	$(CC) $(CFLAGS) $(OBJS2) -o $(OUT2) $(LIBS)
-
-mm.o: mm.c
-	$(CC) -c $(CFLAGS) mm.c $(LIBS)
-
-mm-ijk.o: mm-ijk.c
-	$(CC) -c $(CFLAGS) mm-ijk.c $(LIBS)
+mm:
+	$(CC) helper.c matrix.c -o matrix -O2 -fopenmp -std=c99
 
 clean:
-	rm -rf *o $(OUT) $(OUT2)
+	rm -rf *o
