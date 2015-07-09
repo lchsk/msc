@@ -13,33 +13,26 @@
 // Available implementations
 
 #define IJK 1
-#define IKJ_2 0
-#define IJK_RESTRICT 0
-#define IKJ 0
-#define IKJ_RESTRICT 0
-#define IKJ_RESTRICT_TMP 0
-#define IKJ_UNROLL 0
+#define IKJ_2 1
+#define IJK_RESTRICT 1
+#define IKJ 1
+#define IKJ_RESTRICT 1
+#define IKJ_RESTRICT_TMP 1
+#define IKJ_UNROLL 1
 
-#define IKJ_VECT_2D 0
-#define IKJ_VECT_2D_TILED 0
-#define IKJ_1D_NOTATION 0
+#define IKJ_VECT_2D 1
+#define IKJ_VECT_2D_TILED 1
+#define IKJ_1D_NOTATION 1
 
-#define ARRAY_NOTATION 0
+#define ARRAY_NOTATION 1
 
-#define TILING 0
-#define TILING_2D 0
-#define TEST 0
+#define TILING 1
+#define TILING_2D 1
+#define TEST 1
 
-#define ELEM_FUNCTION 0
+#define ELEM_FUNCTION 1
 
-void init_matrices_2d (int size, DTYPE*** A, DTYPE*** B, DTYPE*** C)
-{
-    *A = new_matrix(size);
-    *B = new_matrix(size);
-    *C = new_matrix(size);
-    init_matrix(size, *A);
-    init_matrix(size, *B);
-}
+// ---
 
 
 int main(int argc, char *argv[])
@@ -82,340 +75,155 @@ int main(int argc, char *argv[])
 
     // ----------------------------------------------
 
-
-
-
-
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-
     #if IJK
-        init_matrices_2d (size, &A, &B, &C);
-
-        t_start = omp_get_wtime();
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
         for (int idx = 0; idx < iter; idx++)
             m_ijk(size, A, B, C);
 
-        print_results ("IJK", t_start, size, iter, 2, 1, A, B, C, A1, B1, C1);
-        // printf ("\tCorrect: %d\n", is_correct_2d (size, A, B, C));
+        print_results ("IJK", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
-    // ----------------------------------------------
+    #if IKJ_2
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // IKJ 2
+        for (int idx = 0; idx < iter; idx++)
+            m_ikj_2(size, A, B, C);
 
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_ikj_2(size, A, B, C);
-    // }
-    //
-    // print_results ("IKJ 2", t_start, size, iter);
-    //
-    // free_matrices (size, A, B, C);
+        print_results ("IKJ_2", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
-    // ----------------------------------------------
+    #if IJK_RESTRICT
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // IJK restrict
+        for (int idx = 0; idx < iter; idx++)
+            m_ijk_restrict(size, A, B, C);
 
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_ijk_restrict(size, A, B, C);
-    // }
-    //
-    // print_results ("IJK restrict", t_start, size, iter);
-    // free_matrices (size, A, B, C);
+        print_results ("IJK_RESTRICT", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
-    // ----------------------------------------------
+    #if IKJ
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // IKJ
+        for (int idx = 0; idx < iter; idx++)
+            m_ikj(size, A, B, C);
 
-    // A = new_matrix(size);
-    //
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_ikj(size, A, B, C);
-    // }
-    //
-    // print_results ("IKJ", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_2d (size, A, B, C));
-    // free_matrices (size, A, B, C);
+        print_results ("IKJ", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
-    // ----------------------------------------------
+    #if IKJ_RESTRICT
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // IKJ restrict
+        for (int idx = 0; idx < iter; idx++)
+            m_ikj_restrict(size, A, B, C);
 
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_ikj_restrict(size, A, B, C);
-    // }
-    //
-    // print_results ("IKJ restrict", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_2d (size, A, B, C));
-    // free_matrices (size, A, B, C);
+        print_results ("IKJ_RESTRICT", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
-    // ----------------------------------------------
+    #if IKJ_RESTRICT_TMP
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // IKJ restrict tmp
+        for (int idx = 0; idx < iter; idx++)
+            m_ikj_restrict_tmp(size, A, B, C);
 
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_ikj_restrict_tmp(size, A, B, C);
-    // }
-    //
-    // print_results ("IKJ restrict tmp", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_2d (size, A, B, C));
-    // free_matrices (size, A, B, C);
+        print_results ("IKJ_RESTRICT_TMP", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
-    // ----------------------------------------------
+    #if IKJ_VECT_2D
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // IKJ vect 2d
+        for (int idx = 0; idx < iter; idx++)
+            m_vect_2d(size, A, B, C);
 
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_vect_2d(size, A, B, C);
-    // }
-    //
-    //
-    // print_results ("IKJ vect 2d", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_2d (size, A, B, C));
-    // // print_matrix (size, A);
-    // // print_matrix (size, B);
-    // // print_matrix (size, C);
-    //
-    //
-    // free_matrices (size, A, B, C);
+        print_results ("IKJ_VECT_2D", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
-    // ----------------------------------------------
+    #if IKJ_VECT_2D_TILED
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // IKJ vect 2d tiled
+        for (int idx = 0; idx < iter; idx++)
+            m_vect_2d_tiled(size, A, B, C, tile_size);
 
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_vect_2d_tiled(size, A, B, C, tile_size);
-    // }
-    //
-    //
-    // print_results ("IKJ vect 2d tiled", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_2d (size, A, B, C));
-    // // print_matrix (size, A);
-    // // print_matrix (size, B);
-    // // print_matrix (size, C);
-    //
-    //
-    // free_matrices (size, A, B, C);
+        print_results ("IKJ_VECT_2D_TILED", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
-    // ----------------------------------------------
+    #if IKJ_1D_NOTATION
+        init_matrices_1d (size, &A1, &B1, &C1, &t_start);
 
-    // IKJ 1d notation
+        for (int idx = 0; idx < iter; idx++)
+            m_ikj_1d(size, A1, B1, C1, tile_size);
 
-    // A1 = new_1d_matrix(size);
-    // B1 = new_1d_matrix(size);
-    // C1 = new_1d_matrix(size);
-    // init_1d_matrix(size, A1);
-    // init_1d_matrix(size, B1);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_ikj_1d(size, A1, B1, C1, tile_size);
-    // }
-    //
-    // print_results ("IKJ 1d notation", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_1d (size, A1, B1, C1));
-    // free_1d_matrices (A1, B1, C1);
+        print_results ("IKJ_1D_NOTATION", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        free_1d_matrices (A1, B1, C1);
+    #endif
 
-    // ----------------------------------------------
+    #if ARRAY_NOTATION
+        init_matrices_1d (size, &A1, &B1, &C1, &t_start);
 
-    // array notation
+        for (int idx = 0; idx < iter; idx++)
+            m_array_not(size, A1, B1, C1);
 
-    // A1 = new_1d_matrix(size);
-    // B1 = new_1d_matrix(size);
-    // C1 = new_1d_matrix(size);
-    // init_1d_matrix(size, A1);
-    // init_1d_matrix(size, B1);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_array_not(size, A1, B1, C1);
-    // }
-    //
-    // print_results ("Array notation", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_1d (size, A1, B1, C1));
-    // free_1d_matrices (A1, B1, C1);
+        print_results ("ARRAY_NOTATION", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        free_1d_matrices (A1, B1, C1);
+    #endif
 
-    // ----------------------------------------------
+    #if IKJ_UNROLL
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // IKJ unroll
+        for (int idx = 0; idx < iter; idx++)
+            m_ikj_unroll(size, A, B, C);
 
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_ikj_unroll (size, A, B, C);
-    // }
-    //
-    //
-    // print_results ("IKJ unroll", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_2d (size, A, B, C));
-    // // print_matrix (size, A);
-    // // print_matrix (size, B);
-    // // print_matrix (size, C);
-    // free_matrices (size, A, B, C);
+        print_results ("IKJ_UNROLL", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
-    // ----------------------------------------------
+    #if TILING
+        init_matrices_1d (size, &A1, &B1, &C1, &t_start);
 
-    // tiling
+        for (int idx = 0; idx < iter; idx++)
+            m_tiling(size, A1, B1, C1, tile_size);
 
-    // A1 = new_1d_matrix(size);
-    // B1 = new_1d_matrix(size);
-    // C1 = new_1d_matrix(size);
-    // init_1d_matrix(size, A1);
-    // init_1d_matrix(size, B1);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_tiling(size, A1, B1, C1, tile_size);
-    // }
-    //
-    // print_results ("Tiling", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_1d (size, A1, B1, C1));
-    // free_1d_matrices (A1, B1, C1);
+        print_results ("TILING", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        free_1d_matrices (A1, B1, C1);
+    #endif
 
-    // ----------------------------------------------
+    #if TEST
+        init_matrices_1d (size, &A1, &B1, &C1, &t_start);
 
-    // test
+        for (int idx = 0; idx < iter; idx++)
+            m_test(size, A1, B1, C1, tile_size);
 
-    // A1 = new_1d_matrix(size);
-    // B1 = new_1d_matrix(size);
-    // C1 = new_1d_matrix(size);
-    // init_1d_matrix(size, A1);
-    // init_1d_matrix(size, B1);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_test(size, A1, B1, C1, tile_size);
-    // }
-    //
-    // print_results ("Test", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_1d (size, A1, B1, C1));
-    // free_1d_matrices (A1, B1, C1);
+        print_results ("TEST", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        free_1d_matrices (A1, B1, C1);
+    #endif
 
-    // ----------------------------------------------
+    #if TILING_2D
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // tiling 2d
+        for (int idx = 0; idx < iter; idx++)
+            m_tiling_2d(size, A, B, C, tile_size);
 
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_tiling_2d(size, A, B, C, tile_size);
-    // }
-    //
-    // print_results ("Tiling 2d", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_2d (size, A, B, C));
-    // free_matrices (size, A, B, C);
+        print_results ("TILING_2D", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
-    // ----------------------------------------------
+    #if ELEM_FUNCTION
+        init_matrices_2d (size, &A, &B, &C, &t_start);
 
-    // Elem function
+        for (int idx = 0; idx < iter; idx++)
+            m_elem_fun(size, A, B, C, tile_size);
 
-    // A = new_matrix(size);
-    // B = new_matrix(size);
-    // C = new_matrix(size);
-    // init_matrix(size, A);
-    // init_matrix(size, B);
-    //
-    // t_start = omp_get_wtime();
-    //
-    // for (int idx = 0; idx < iter; idx++)
-    // {
-    //     m_elem_fun(size, A, B, C, tile_size);
-    // }
-    //
-    // print_results ("Elemental function", t_start, size, iter);
-    // printf ("\tCorrect: %d\n", is_correct_2d (size, A, B, C));
-    //
-    //
-    // free_matrices (size, A, B, C);
+        print_results ("ELEM_FUNCTION", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
+    #endif
 
     // DTYPE a[] = {1,2,3};
     // DTYPE b[] = {1,2,3};

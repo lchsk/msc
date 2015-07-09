@@ -212,3 +212,27 @@ is_correct_1d (int size, DTYPE* A, DTYPE* B, DTYPE* C)
 
     return 1;
 }
+
+void
+init_matrices_2d (int size, DTYPE*** A, DTYPE*** B, DTYPE*** C, double* time)
+{
+    *A = new_matrix(size);
+    *B = new_matrix(size);
+    *C = new_matrix(size);
+    init_matrix(size, *A);
+    init_matrix(size, *B);
+
+    *time = omp_get_wtime();
+}
+
+void
+init_matrices_1d (int size, DTYPE** A, DTYPE** B, DTYPE** C, double* time)
+{
+    *A = new_1d_matrix(size);
+    *B = new_1d_matrix(size);
+    *C = new_1d_matrix(size);
+    init_1d_matrix(size, *A);
+    init_1d_matrix(size, *B);
+
+    *time = omp_get_wtime();
+}

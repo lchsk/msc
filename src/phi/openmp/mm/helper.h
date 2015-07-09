@@ -5,6 +5,13 @@
 
 #define DTYPE double
 
+// How a matrix is represented
+#define REPR_2D 2
+#define REPR_1D 1
+
+#define TRUE 1
+#define FALSE 0
+
 // Options
 
 #define USE_ALIGNMENT 1
@@ -76,5 +83,11 @@ is_correct_2d (int size, DTYPE** A, DTYPE** B, DTYPE** C);
 
 int
 is_correct_1d (int size, DTYPE* A, DTYPE* B, DTYPE* C);
+
+void
+init_matrices_2d (int size, DTYPE*** A, DTYPE*** B, DTYPE*** C, double* time);
+
+void
+init_matrices_1d (int size, DTYPE** A, DTYPE** B, DTYPE** C, double* time);
 
 #endif
