@@ -1,9 +1,9 @@
 CC = icc
 DEBUG =
-CFLAGS = -O3 -Ofast -opt-assume-safe-padding
+CFLAGS = -O3 -Ofast -opt-assume-safe-padding -fno-alias
 
 LIBS = -fopenmp -mkl
-LIBS_MIC = -fopenmp
+LIBS_MIC = -fopenmp -mkl
 
 STD = -std=c99
 

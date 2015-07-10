@@ -14,6 +14,7 @@
 #define USE_MKL TRUE
 #define USE_ALIGNMENT TRUE
 #define DOUBLE_PRECISION TRUE
+#define CHEAT TRUE
 
 // ---
 

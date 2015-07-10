@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
-// #include <mkl.h>
+
 #include <time.h>
 // #include <cilk/cilk.h>
 #include "helper.h"
@@ -9,6 +9,10 @@
 #include "experimental.h"
 #include "elemental.h"
 #include "fast.h"
+
+#if USE_MKL
+#include <mkl.h>
+#endif
 
 // Available implementations
 
@@ -44,6 +48,15 @@ int main(int argc, char *argv[])
     int size = 1000;
     int iter = 1;
     int tile_size = 8;
+    int mic_count = 0;
+    int auto_offload = -1; // not set
+
+    if (getenv ("MKL_MIC_ENABLE") != NULL)
+        auto_offload = atoi (getenv ("MKL_MIC_ENABLE"));
+
+    #if (USE_MKL && ! MIC)
+        mic_count = mkl_mic_get_device_count();
+    #endif
 
     if (argc >= 2 && argv[1] != NULL)
         size = atoi (argv[1]);
@@ -69,9 +82,9 @@ int main(int argc, char *argv[])
 
     #pragma omp parallel
     #pragma omp master
-    printf ("Size: %d x %d Iterations: %d Threads: %d Alignment: %d MIC: %d Dtype: %db Tile: %d\
+    printf ("Size: %d x %d Iterations: %d Threads: %d Alignment: %d MIC: %d Dtype: %db Tile: %d MIC units: %d Cheating: %d AO: %d\
             \n\n",
-        size, size, iter, omp_get_num_threads(), USE_ALIGNMENT, MIC, sizeof (DTYPE) * 8, tile_size
+        size, size, iter, omp_get_num_threads(), USE_ALIGNMENT, MIC, sizeof (DTYPE) * 8, tile_size, mic_count, CHEAT, auto_offload
     );
     #pragma omp barrier
 
@@ -135,6 +148,11 @@ int main(int argc, char *argv[])
 
         print_results ("IKJ_RESTRICT_TMP", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
+    #endif
+
+    #if CHEAT
+        init_matrices_2d (size, &A, &B, &C, &t_start);
+        m_vect_2d(size, A, B, C);
     #endif
 
     #if IKJ_VECT_2D
@@ -225,6 +243,11 @@ int main(int argc, char *argv[])
 
         print_results ("ELEM_FUNCTION", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
+    #endif
+
+    #if CHEAT
+        init_matrices_1d (size, &A1, &B1, &C1, &t_start);
+        m_mkl(size, A1, B1, C1);
     #endif
 
     #if MKL
