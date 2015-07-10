@@ -19,9 +19,6 @@ m_vect_2d(int size, DTYPE** A, DTYPE** B, DTYPE** C)
             #pragma vector aligned
             for (int j = 0; j < size; ++j)
             {
-                // __assume_aligned(r, 64);
-                // __assume_aligned(u, 64);
-                // __assume_aligned(v, 64);
                 #pragma vector aligned
                 r[j] += u[k] * v[j];
             }
@@ -80,7 +77,6 @@ m_array_not(int size, DTYPE* A, DTYPE* B, DTYPE* C)
     {
         for (int k = 0; k < size; ++k)
         {
-
             #pragma vector aligned
             C[i * size:size] += A[i * size + k] * B[k * size:size];
         }
@@ -97,6 +93,7 @@ m_elem_fun(int size, DTYPE** A, DTYPE** B, DTYPE** C, int tile_size)
         DTYPE* r = C[i];
         DTYPE* u = A[i];
 
+        #pragma vector aligned
         for (int k = 0; k < size; ++k)
         {
             DTYPE* v = B[k];

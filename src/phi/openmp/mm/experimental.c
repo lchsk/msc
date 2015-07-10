@@ -2,6 +2,10 @@
 #include "experimental.h"
 #include "elemental.h"
 
+#if USE_MKL
+    #include "mkl.h"
+#endif
+
 void
 m_test(int size, DTYPE* A, DTYPE* B, DTYPE* C, int tile_size)
 {
@@ -173,4 +177,14 @@ m_ikj_1d(int size, DTYPE* A, DTYPE* B, DTYPE* C, int tile_size)
             }
         }
     }
+}
+
+void
+m_mkl(int size, DTYPE* A, DTYPE* B, DTYPE* C)
+{
+    DTYPE alpha = 1.0f, beta = 0.0f;
+
+    MKL_FUNC(CblasRowMajor, CblasNoTrans, CblasNoTrans, size, size, size, alpha,
+                  A, size, B, size, beta, C, size);
+    // sgemm("N", "N", &size, &size, &size, &alpha, (DTYPE*)A, &size, (DTYPE*)B, &size, &beta, (DTYPE*)C, &size);
 }

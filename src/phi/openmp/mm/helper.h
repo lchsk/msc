@@ -1,9 +1,6 @@
 #ifndef HELPER_H
 #define HELPER_H
 
-// Aliases
-
-#define DTYPE double
 
 // How a matrix is represented
 #define REPR_2D 2
@@ -14,7 +11,19 @@
 
 // Options
 
-#define USE_ALIGNMENT 1
+#define USE_MKL TRUE
+#define USE_ALIGNMENT TRUE
+#define DOUBLE_PRECISION TRUE
+
+// ---
+
+#if DOUBLE_PRECISION
+#define DTYPE double
+#define MKL_FUNC cblas_dgemm
+#else
+#define DTYPE float
+#define MKL_FUNC cblas_sgemm
+#endif
 
 #ifdef __MIC__
 #define MIC 1

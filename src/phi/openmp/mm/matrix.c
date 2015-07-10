@@ -12,25 +12,27 @@
 
 // Available implementations
 
-#define IJK 1
-#define IKJ_2 1
-#define IJK_RESTRICT 1
-#define IKJ 1
-#define IKJ_RESTRICT 1
-#define IKJ_RESTRICT_TMP 1
-#define IKJ_UNROLL 1
+#define IJK FALSE
+#define IKJ_2 FALSE
+#define IJK_RESTRICT FALSE
+#define IKJ FALSE
+#define IKJ_RESTRICT FALSE
+#define IKJ_RESTRICT_TMP FALSE
+#define IKJ_UNROLL FALSE
 
-#define IKJ_VECT_2D 1
-#define IKJ_VECT_2D_TILED 1
-#define IKJ_1D_NOTATION 1
+#define IKJ_VECT_2D TRUE
+#define IKJ_VECT_2D_TILED FALSE
+#define IKJ_1D_NOTATION FALSE
 
-#define ARRAY_NOTATION 1
+#define ARRAY_NOTATION FALSE
 
-#define TILING 1
-#define TILING_2D 1
-#define TEST 1
+#define TILING FALSE
+#define TILING_2D FALSE
+#define TEST FALSE
 
-#define ELEM_FUNCTION 1
+#define ELEM_FUNCTION FALSE
+
+#define MKL TRUE
 
 // ---
 
@@ -223,6 +225,16 @@ int main(int argc, char *argv[])
 
         print_results ("ELEM_FUNCTION", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
+    #endif
+
+    #if MKL
+        init_matrices_1d (size, &A1, &B1, &C1, &t_start);
+
+        for (int idx = 0; idx < iter; idx++)
+            m_mkl(size, A1, B1, C1);
+
+        print_results ("MKL", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        free_1d_matrices (A1, B1, C1);
     #endif
 
     // DTYPE a[] = {1,2,3};

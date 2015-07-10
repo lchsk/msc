@@ -15,4 +15,6 @@ void m_elem_fun2(int size, DTYPE** A, DTYPE** B, DTYPE** C, int tile_size);
 // ikj 1d notation with tiling
 void m_ikj_1d(int size, DTYPE* A, DTYPE* B, DTYPE* C, int tile_size);
 
+void m_mkl(int size, DTYPE* A, DTYPE* B, DTYPE* C);
+
 #endif
