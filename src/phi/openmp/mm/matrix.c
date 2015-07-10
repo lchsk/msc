@@ -51,8 +51,16 @@ int main(int argc, char *argv[])
     int mic_count = 0;
     int auto_offload = -1; // not set
 
-    if (getenv ("MKL_MIC_ENABLE") != NULL)
-        auto_offload = atoi (getenv ("MKL_MIC_ENABLE"));
+    // if (getenv ("MKL_MIC_ENABLE") != NULL)
+        // auto_offload = atoi (getenv ("MKL_MIC_ENABLE"));
+
+    #if ( ! MIC && USE_MKL && ENABLE_AUTO_OFFLOAD)
+        auto_offload = TRUE;
+        mkl_mic_enable();
+    #elif ( ! MIC)
+        auto_offload = FALSE;
+        mkl_mic_disable();
+    #endif
 
     #if (USE_MKL && ! MIC)
         mic_count = mkl_mic_get_device_count();
@@ -82,7 +90,7 @@ int main(int argc, char *argv[])
 
     #pragma omp parallel
     #pragma omp master
-    printf ("Size: %d x %d Iterations: %d Threads: %d Alignment: %d MIC: %d Dtype: %db Tile: %d MIC units: %d Cheating: %d AO: %d\
+    printf ("Size: %d x %d Iterations: %d Threads: %d Alignment: %d MIC: %d Dtype: %db Tile: %d MIC units: %d Warm up: %d AO: %d\
             \n\n",
         size, size, iter, omp_get_num_threads(), USE_ALIGNMENT, MIC, sizeof (DTYPE) * 8, tile_size, mic_count, CHEAT, auto_offload
     );
@@ -161,7 +169,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_vect_2d(size, A, B, C);
 
-        print_results ("IKJ_VECT_2D", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IKJ_VECT_2D", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -256,7 +264,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_mkl(size, A1, B1, C1);
 
-        print_results ("MKL", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("MKL", t_start, size, iter, REPR_1D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_1d_matrices (A1, B1, C1);
     #endif
 

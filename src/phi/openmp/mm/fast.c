@@ -17,6 +17,8 @@ m_vect_2d(int size, DTYPE** A, DTYPE** B, DTYPE** C)
             ALIGN_CODE DTYPE* restrict v = B[k];
 
             #pragma vector aligned
+            // #pragma unroll(8)
+            // #pragma ivdep
             for (int j = 0; j < size; ++j)
             {
                 #pragma vector aligned

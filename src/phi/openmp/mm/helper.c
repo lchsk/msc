@@ -134,7 +134,7 @@ print_results (
 
     printf ("%s\n", str);
     printf ("\tTime: %f s\n", t_avg);
-    printf ("\tGflops: %g\n", 2e-9 * size * size * size / t_avg);
+    printf ("\tGflops: %.2f\n", 2e-9 * size * size * size / t_avg / iter);
 
     if (is_correct)
         if (mem_alloc == 1)
