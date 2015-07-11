@@ -1,0 +1,18 @@
+OBJS = main.o
+CC = icpc
+DEBUG = 
+CFLAGS = $(DEBUG)
+LIBS = -fopenmp -mmic -vec-report3 -O3 -Ofast
+OUT = charcount-mic
+
+all: $(OUT)
+
+charcount-mic: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(OUT) $(LIBS)
+
+main.o: main.c
+	$(CC) -c $(CFLAGS) main.c $(LIBS)
+
+
+clean:
+	rm -rf *o $(OUT)
