@@ -14,6 +14,7 @@ new_matrix(int size)
         ALIGN_CODE DTYPE** tmp = MALLOC (sizeof (DTYPE*) * size);
     #endif
 
+    #pragma omp parallel for
     for (int i = 0; i < size; i++)
         #ifdef USE_ALIGNMENT
             tmp[i] = MALLOC (sizeof (DTYPE) * size, ALIGN);
@@ -21,31 +22,12 @@ new_matrix(int size)
             tmp[i] = MALLOC (sizeof (DTYPE) * size);
         #endif
 
+    #pragma omp parallel for
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             tmp[i][j] = 0.0;
 
     return tmp;
-    // #else
-    //     tmp = MALLOC (sizeof (DTYPE*) * size);
-    //
-    //     for (int i = 0; i < size; i++)
-    //     {
-    //         DTYPE tmp[i] = MALLOC (sizeof (DTYPE*) * size);
-    //     }
-    //     for (int i = 0; i < size; i++)
-    //         for (int j = 0; j < size; j++)
-    //             tmp[i][j] = 0.0;
-    // #endif
-
-    // for (int i = 0; i < size; i++)
-    // {
-    //     #ifdef USE_ALIGNMENT
-    //         ALIGN_CODE DTYPE tmp[i] = MALLOC (sizeof (DTYPE*) * size, ALIGN);
-    //     #else
-    //         DTYPE tmp[i] = MALLOC (sizeof (DTYPE*) * size);
-    //     #endif
-    // }
 }
 
 ALIGN_CODE DTYPE*
@@ -57,6 +39,7 @@ new_1d_matrix(int size)
         DTYPE* tmp = MALLOC (sizeof (DTYPE*) * size * size);
     #endif
 
+    #pragma omp parallel for
     for (int i = 0; i < size * size; i++)
         tmp[i] = 0.0;
 

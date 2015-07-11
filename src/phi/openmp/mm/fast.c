@@ -35,30 +35,43 @@ m_vect_2d_tiled(int size, DTYPE** A, DTYPE** B, DTYPE** C, int tile_size)
     #pragma omp parallel for collapse(2) shared(A, B, C, size, tile_size)
     for (int i = 0; i < size; i += tile_size)
     {
-        // printf ("I %d\n", i);
         for (int k = 0; k < size; k += tile_size)
         {
-            // printf ("K %d\n", k);
             for (int j = 0; j < size; j += tile_size)
             {
-                // printf ("J %d\n", j);
-
                 for(int ii = i; ii < min(i + tile_size, size); ii++)
                 {
                     ALIGN_CODE DTYPE* r = C[ii];
                     ALIGN_CODE DTYPE* u = A[ii];
 
-                    // printf ("A: %.2f\n", *u);
-
-                    for(int kk = k; kk < min(k + tile_size, size); ++kk)
+                    for(int kk = k; kk < min(k + tile_size, size); kk++)
                     {
                         #pragma vector aligned
                         #pragma ivdep
-                        for(int jj = j; jj < min(j + tile_size, size); ++jj)
+                        for(int jj = j; jj < min(j + tile_size, size); jj += 8)
                         {
                             ALIGN_CODE DTYPE* v = B[kk];
                             #pragma vector aligned
+                            // r[jj] += u[kk] * v[jj];
+
                             r[jj] += u[kk] * v[jj];
+                            r[jj + 1] += u[kk] * v[jj + 1];
+                            r[jj + 2] += u[kk] * v[jj + 2];
+                            r[jj + 3] += u[kk] * v[jj + 3];
+                            r[jj + 4] += u[kk] * v[jj + 4];
+                            r[jj + 5] += u[kk] * v[jj + 5];
+                            r[jj + 6] += u[kk] * v[jj + 6];
+                            r[jj + 7] += u[kk] * v[jj + 7];
+
+
+                            // C[ii][jj] += A[ii][kk] * tmp;
+                            // C[ii + 1][jj] += A[ii + 1][kk] * tmp;
+                            // C[ii + 2][jj] += A[ii + 2][kk] * tmp;
+                            // C[ii + 3][jj] += A[ii + 3][kk] * tmp;
+                            // C[ii + 4][jj] += A[ii + 4][kk] * tmp;
+                            // C[ii + 5][jj] += A[ii + 5][kk] * tmp;
+                            // C[ii + 6][jj] += A[ii + 6][kk] * tmp;
+                            // C[ii + 7][jj] += A[ii + 7][kk] * tmp;
                         }
                     }
                 }

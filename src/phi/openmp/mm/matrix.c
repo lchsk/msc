@@ -25,24 +25,58 @@
 #define IKJ_UNROLL FALSE
 
 #define IKJ_VECT_2D TRUE
-#define IKJ_VECT_2D_TILED FALSE
-#define IKJ_1D_NOTATION FALSE
+#define IKJ_VECT_2D_TILED TRUE
+#define IKJ_1D_NOTATION TRUE
 
 #define ARRAY_NOTATION FALSE
 
-#define TILING FALSE
-#define TILING_2D FALSE
-#define TEST FALSE
+#define TILING TRUE
+#define TILING_2D TRUE
+#define TEST TRUE
+#define TEST_2D TRUE
 
 #define ELEM_FUNCTION FALSE
 
 #define MKL TRUE
 
+#define CHOOSE TRUE
+
 // ---
+
+void test(int size, float* arr)
+{
+    for (int i = 0; i < size; i++)
+        printf ("%.1f ", arr[i]);
+
+    printf ("\n");
+}
 
 
 int main(int argc, char *argv[])
 {
+    // float* a = malloc (sizeof (float) * 2 * 2);
+    // float** b = malloc (sizeof (float) * 2);
+    //
+    // for (int i = 0; i < 2; i++)
+    //     b[i] = malloc (sizeof (float) * 2);
+    //
+    // // a[0] = 1; a[1] = 2; a[2] = 3; a[3] = 4;
+    // b[0][0] = 1; b[0][1] = 2; b[1][0] = 3; b[1][1] = 4;
+    //
+    // for (int i = 0; i < 2; i++)
+    //     memmove(a + i * 2, &b[i][0], 2 * sizeof(float));
+    //
+    // test (4, a);
+    // // test (4, (float*) b);
+    //
+    // free (a);
+    //
+    // for (int i = 0; i < 2; i++)
+    //     free (b[i]);
+    // free (b);
+    //
+    // return 0;
+
     srand(time(NULL));
 
     int size = 1000;
@@ -104,7 +138,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_ijk(size, A, B, C);
 
-        print_results ("IJK", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IJK", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -114,7 +148,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_ikj_2(size, A, B, C);
 
-        print_results ("IKJ_2", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IKJ_2", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -124,7 +158,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_ijk_restrict(size, A, B, C);
 
-        print_results ("IJK_RESTRICT", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IJK_RESTRICT", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -134,7 +168,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_ikj(size, A, B, C);
 
-        print_results ("IKJ", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IKJ", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -144,7 +178,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_ikj_restrict(size, A, B, C);
 
-        print_results ("IKJ_RESTRICT", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IKJ_RESTRICT", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -154,7 +188,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_ikj_restrict_tmp(size, A, B, C);
 
-        print_results ("IKJ_RESTRICT_TMP", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IKJ_RESTRICT_TMP", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -179,7 +213,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_vect_2d_tiled(size, A, B, C, tile_size);
 
-        print_results ("IKJ_VECT_2D_TILED", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IKJ_VECT_2D_TILED", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -189,7 +223,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_ikj_1d(size, A1, B1, C1, tile_size);
 
-        print_results ("IKJ_1D_NOTATION", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IKJ_1D_NOTATION", t_start, size, iter, REPR_1D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_1d_matrices (A1, B1, C1);
     #endif
 
@@ -199,7 +233,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_array_not(size, A1, B1, C1);
 
-        print_results ("ARRAY_NOTATION", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("ARRAY_NOTATION", t_start, size, iter, REPR_1D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_1d_matrices (A1, B1, C1);
     #endif
 
@@ -209,7 +243,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_ikj_unroll(size, A, B, C);
 
-        print_results ("IKJ_UNROLL", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("IKJ_UNROLL", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -219,7 +253,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_tiling(size, A1, B1, C1, tile_size);
 
-        print_results ("TILING", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("TILING", t_start, size, iter, REPR_1D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_1d_matrices (A1, B1, C1);
     #endif
 
@@ -229,8 +263,18 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_test(size, A1, B1, C1, tile_size);
 
-        print_results ("TEST", t_start, size, iter, REPR_1D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("TEST", t_start, size, iter, REPR_1D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_1d_matrices (A1, B1, C1);
+    #endif
+
+    #if TEST_2D
+        init_matrices_2d (size, &A, &B, &C, &t_start);
+
+        for (int idx = 0; idx < iter; idx++)
+            m_test_2d(size, A, B, C, tile_size);
+
+        print_results ("TEST_2D", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
     #endif
 
     #if TILING_2D
@@ -239,7 +283,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_tiling_2d(size, A, B, C, tile_size);
 
-        print_results ("TILING_2D", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("TILING_2D", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -249,7 +293,7 @@ int main(int argc, char *argv[])
         for (int idx = 0; idx < iter; idx++)
             m_elem_fun(size, A, B, C, tile_size);
 
-        print_results ("ELEM_FUNCTION", t_start, size, iter, REPR_2D, TRUE, A, B, C, A1, B1, C1);
+        print_results ("ELEM_FUNCTION", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_matrices (size, A, B, C);
     #endif
 
@@ -266,6 +310,16 @@ int main(int argc, char *argv[])
 
         print_results ("MKL", t_start, size, iter, REPR_1D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
         free_1d_matrices (A1, B1, C1);
+    #endif
+
+    #if CHOOSE
+        init_matrices_2d (size, &A, &B, &C, &t_start);
+
+        for (int idx = 0; idx < iter; idx++)
+            m_choose(size, A, B, C, tile_size);
+
+        print_results ("CHOOSE", t_start, size, iter, REPR_2D, CHECK_CORRECTNESS, A, B, C, A1, B1, C1);
+        free_matrices (size, A, B, C);
     #endif
 
     // DTYPE a[] = {1,2,3};
