@@ -18,6 +18,10 @@
 #define MIC 0
 #endif
 
+#if MIC
+    #include <xmmintrin.h>
+#endif
+
 // __attribute__((vector))
 // void cmp(int* count, char c, int letter)
 // {
@@ -38,7 +42,6 @@ int main(int argc, char* argv[])
     int th_id;
     int nthreads;
     int c, c1, c2, c3, c4;
-    // c = c1 = c2 = c3 = c4 = 0;
     c = 0;
     int letter = 0;
     int start = 0;
@@ -63,8 +66,7 @@ int main(int argc, char* argv[])
     long fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    // __attribute__((aligned(ALIGN)))
-    char* str = (char*) malloc(fsize + 1);
+    __attribute__((aligned(ALIGN))) char* restrict str = (char*) _mm_malloc(fsize + 1, ALIGN);
     fread(str, fsize, 1, f);
     fclose(f);
 
@@ -108,18 +110,22 @@ int main(int argc, char* argv[])
 
         // printf("letter : %c, id: %d, s: %d\n", letter, th_id, start);
 
-        // __assume_aligned(str, ALIGN);
-        // #if MIC
-        //     #pragma unroll(4)
-        // #endif
         for (int i = start; i < min (start + block_size, fsize); i += tile)
         {
             // printf ("tile %d\n", letter);
-            // char* tmp = &str[i];
+            // char* restrict tmp = &str[i];
 
             // #pragma vector aligned
             // printf ("MAX: %d %d\n", i + tile, i + block_size);
+
+            #if MIC
+                #pragma unroll(4)
+                // _MM_HINT_T0
+                // #pragma prefetch str:0:16
+            #endif
+            __assume_aligned(str, ALIGN);
             for (int j = i; j < min (i + tile, start + block_size); j++)
+            // for (int j = 0; j < tile; j++)
             {
                 // if (j == i)
                 // {
@@ -127,7 +133,8 @@ int main(int argc, char* argv[])
                 // }
 
                 // c += (str[j] == letter) ? 1 : 0;
-                if ((int)str[j] == (int)letter)
+                if (str[j] == letter)
+                // if (tmp[i] == letter)
                     c++;
                 // if ((int)letter == (int)str[j])
                     // c;
@@ -143,12 +150,11 @@ int main(int argc, char* argv[])
         }
 
         // #pragma omp barrier
-        #pragma omp critical
-        {
-            // #pragma omp flush(c)
-            // printf ("C: %d\n", c);
-            final_count[letter - SMALL_A] += c;
-        }
+        // #pragma omp critical
+        #pragma omp atomic
+        final_count[letter - SMALL_A] += c;
+        // #pragma omp flush(c)
+        // printf ("C: %d\n", c);
         // printf ("SIEMA: %c = %d\n", letter, c);
     }
     printf("Time: %f ms\n", (omp_get_wtime() - t) * 1000);
@@ -159,7 +165,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < LEN; i++)
         printf("%c = %d\n", i + SMALL_A, final_count[i]);
 
-    free (str);
+    _mm_free (str);
 
     return 0;
 }
