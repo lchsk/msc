@@ -73,6 +73,8 @@ int main(int argc, char* argv[])
     fread(str, fsize, 1, f);
     fclose(f);
 
+    printf("Time: %f ms\n", (omp_get_wtime() - t) * 1000);
+
     printf("File size: %d\n", fsize);
 
     #pragma omp parallel
@@ -103,31 +105,12 @@ int main(int argc, char* argv[])
         letter = th_id / factor + SMALL_A;
         int start = (th_id % factor) * block_size;
 
-        // #pragma vector aligned
-        // #pragma ivdep
         __assume_aligned(str, ALIGN);
-        // for (int i = start; i < min (start + block_size, fsize); i += 4)
         #pragma unroll(4)
         for (int i = start; i < start + block_size; i++)
         {
+            #pragma vector aligned
             c += (str[i] == letter) ? 1 : 0;
-
-
-            // #pragma vector aligned
-            // c += cmp(str[i], letter);
-            // c1 = (str[i] == letter) ? c1 + 1 : c1;
-            // c2 = (str[i + 1] == letter) ? c2 + 1 : c2;
-            // c3 = (str[i + 2] == letter) ? c3 + 1 : c3;
-            // c4 = (str[i + 3] == letter) ? c4 + 1 : c4;
-
-            // cmp(&c, str[start:block_size], letter);
-
-            // c1 = (str[i] == letter) ? 1 : 0;
-            // c2 = (str[i + 1] == letter) ? 1 : 0;
-            // c3 = (str[i + 2] == letter) ? 1 : 0;
-            // c4 = (str[i + 3] == letter) ? 1 : 0;
-            //
-            // c += (c1 + c2 + c3 + c4);
         }
 
         #pragma omp critical
