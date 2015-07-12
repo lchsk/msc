@@ -4,10 +4,6 @@
 #include <string.h>
 #include <math.h>
 
-// #define OP(a,b) (((a) ^ (b)) & 1 ^ 1)
-// #define F(a, b) (((a) ^ (b)))
-// #define AP(a) (( ~a & ( a + ~0 ) ) >> 31)
-
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 
@@ -16,29 +12,25 @@
 #define ALIGN 64
 #define SMALL_A 97
 
-__attribute__((vector))
-void cmp(int* count, char c, int letter)
-{
-    *count += (c == letter) ? 1 : 0;
-}
+#ifdef __MIC__
+#define MIC 1
+#else
+#define MIC 0
+#endif
+
+// __attribute__((vector))
+// void cmp(int* count, char c, int letter)
+// {
+//     *count += (c == letter) ? 1 : 0;
+// }
 
 int main(int argc, char* argv[])
 {
-    // char a = 'a';
-    //
-    // printf ("RES: %d\n", -AP(F('a', 97)));
-    // printf ("RES: %d\n", -AP(F('b', 97)));
-    // printf ("RES: %d\n", -AP(F('c', 97)));
-    // printf ("RES: %d\n", -AP(F('d', 100)));
-    // printf ("RES: %d\n", -AP(F('e', 101)));
-    //
-    // return 0;
-
     printf ("Character count (2)\n");
 
-    if (argc != 3)
+    if (argc != 4)
     {
-        printf ("Usage: \n\t%s path threads\n", argv[0]);
+        printf ("Usage: \n\t%s path threads tile_size\n", argv[0]);
         return 1;
     }
 
@@ -46,8 +38,10 @@ int main(int argc, char* argv[])
     int th_id;
     int nthreads;
     int c, c1, c2, c3, c4;
-    c = c1 = c2 = c3 = c4 = 0;
+    // c = c1 = c2 = c3 = c4 = 0;
+    c = 0;
     int letter = 0;
+    int start = 0;
 
     int count[LEN];
     int final_count[LEN];
@@ -69,7 +63,8 @@ int main(int argc, char* argv[])
     long fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    __attribute__((aligned(ALIGN))) char* restrict str = (char*) _mm_malloc(fsize + 1, ALIGN);
+    // __attribute__((aligned(ALIGN)))
+    char* str = (char*) malloc(fsize + 1);
     fread(str, fsize, 1, f);
     fclose(f);
 
@@ -88,33 +83,73 @@ int main(int argc, char* argv[])
         printf ("Number of threads must be >= %d\n", LEN);
     }
 
-    int regions = nthreads / LEN;
-    int block_size = fsize / regions;
+    int regions = (int)floor(nthreads / LEN);
+    int block_size = (int)floor(fsize / regions);
 
-    // private count (for each letter)
-    int factor = nthreads / LEN;
+    int factor = (int)floor(nthreads / LEN);
 
-    printf ("Threads: %d/%d, Regions: %d, Block: %d, Factor: %d\n", regions * LEN, nthreads, regions, block_size, factor);
+    int tile = block_size;
+
+    if (atoi (argv[3]) != 0)
+        tile = atoi (argv[3]);
+
+    printf ("Threads: %d/%d, Regions: %d, Block: %d, Tile: %d, Factor: %d\n", regions * LEN, nthreads, regions, block_size, tile, factor);
 
     #pragma omp barrier
 
     t = omp_get_wtime();
-    #pragma omp parallel shared(str, block_size, final_count) private(count, th_id, c, c1, c2, c3, c4, letter) num_threads(nthreads)
+
+    #pragma omp parallel default(none) shared(str, block_size, final_count, factor, fsize, tile) private(start, th_id, c, letter) num_threads(nthreads)
     {
         th_id = omp_get_thread_num();
-        letter = th_id / factor + SMALL_A;
-        int start = (th_id % factor) * block_size;
+        letter = (int)floor(th_id / factor) + SMALL_A;
+        start = (th_id % factor) * block_size;
+        c = 0;
 
-        __assume_aligned(str, ALIGN);
-        #pragma unroll(4)
-        for (int i = start; i < start + block_size; i++)
+        // printf("letter : %c, id: %d, s: %d\n", letter, th_id, start);
+
+        // __assume_aligned(str, ALIGN);
+        // #if MIC
+        //     #pragma unroll(4)
+        // #endif
+        for (int i = start; i < min (start + block_size, fsize); i += tile)
         {
-            #pragma vector aligned
-            c += (str[i] == letter) ? 1 : 0;
+            // printf ("tile %d\n", letter);
+            // char* tmp = &str[i];
+
+            // #pragma vector aligned
+            // printf ("MAX: %d %d\n", i + tile, i + block_size);
+            for (int j = i; j < min (i + tile, start + block_size); j++)
+            {
+                // if (j == i)
+                // {
+                //     printf ("loop len: %d %d\n", i, min (i + tile, start + block_size));
+                // }
+
+                // c += (str[j] == letter) ? 1 : 0;
+                if ((int)str[j] == (int)letter)
+                    c++;
+                // if ((int)letter == (int)str[j])
+                    // c;
+
+
+
+                // c++;
+                // printf ("%c ", str[j]);
+            }
+            // break;
+
+            // printf ("EXIT: %d\n", j);
         }
 
+        // #pragma omp barrier
         #pragma omp critical
-        final_count[letter - SMALL_A] += c;
+        {
+            // #pragma omp flush(c)
+            // printf ("C: %d\n", c);
+            final_count[letter - SMALL_A] += c;
+        }
+        // printf ("SIEMA: %c = %d\n", letter, c);
     }
     printf("Time: %f ms\n", (omp_get_wtime() - t) * 1000);
 
@@ -124,7 +159,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < LEN; i++)
         printf("%c = %d\n", i + SMALL_A, final_count[i]);
 
-    _mm_free (str);
+    free (str);
 
     return 0;
 }

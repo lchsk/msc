@@ -1,7 +1,7 @@
 CC = icc
 DEBUG =
-CFLAGS = -O3 -Ofast -opt-assume-safe-padding -fno-alias
-
+CFLAGS =
+# -O3 -Ofast -opt-assume-safe-padding -fno-alias
 LIBS = -fopenmp
 LIBS_MIC = -fopenmp
 
