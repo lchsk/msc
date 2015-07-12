@@ -1,0 +1,10 @@
+i5.txt
+
+1 - 1KB
+2 - 1MB
+3 - 100MB
+4 - 1GB
+
+12-07-2015
+for xeon: 80 threads
+- no tiling (ie tile = 0)
