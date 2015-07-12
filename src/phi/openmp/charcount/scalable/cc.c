@@ -4,12 +4,23 @@
 #include <string.h>
 #include <math.h>
 
-#define OP(a,b) (((a) ^ (b)) & 1 ^ 1)
-#define F(a, b) (((a) ^ (b)))
-#define AP(a) (( ~a & ( a + ~0 ) ) >> 31)
+// #define OP(a,b) (((a) ^ (b)) & 1 ^ 1)
+// #define F(a, b) (((a) ^ (b)))
+// #define AP(a) (( ~a & ( a + ~0 ) ) >> 31)
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
+
+// Length of the alphabet
+#define LEN 26
+#define ALIGN 64
+#define SMALL_A 97
+
+__attribute__((vector))
+void cmp(int* count, char c, int letter)
+{
+    *count += (c == letter) ? 1 : 0;
+}
 
 int main(int argc, char* argv[])
 {
@@ -23,24 +34,42 @@ int main(int argc, char* argv[])
     //
     // return 0;
 
+    printf ("Character count (2)\n");
+
+    if (argc != 3)
+    {
+        printf ("Usage: \n\t%s path threads\n", argv[0]);
+        return 1;
+    }
+
     double t, t2, t3;
     int th_id;
     int nthreads;
+    int c, c1, c2, c3, c4;
+    c = c1 = c2 = c3 = c4 = 0;
+    int letter = 0;
 
-    int count[26];
-    int final_count[26];
+    int count[LEN];
+    int final_count[LEN];
 
-    for (int i = 0; i < 26; i++)
+    for (int i = 0; i < LEN; i++)
         count[i] = final_count[i] = 0;
 
     t = omp_get_wtime();
 
-    FILE *f = fopen(argv[1], "rb");
+    FILE* f = fopen(argv[1], "rb");
+
+    if ( ! f)
+    {
+        printf ("File %s does not exist\n", argv[1]);
+        return 1;
+    }
+
     fseek(f, 0, SEEK_END);
     long fsize = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    char* str = (char*) _mm_malloc(fsize + 1, 64);
+    __attribute__((aligned(ALIGN))) char* restrict str = (char*) _mm_malloc(fsize + 1, ALIGN);
     fread(str, fsize, 1, f);
     fclose(f);
 
@@ -48,66 +77,69 @@ int main(int argc, char* argv[])
 
     #pragma omp parallel
     #pragma omp master
-    nthreads = omp_get_num_threads();
+
     nthreads = atoi (argv[2]);
+
+    if (nthreads < LEN)
+    {
+        nthreads = LEN;
+        printf ("Number of threads must be >= %d\n", LEN);
+    }
+
+    int regions = nthreads / LEN;
+    int block_size = fsize / regions;
+
+    // private count (for each letter)
+    int factor = nthreads / LEN;
+
+    printf ("Threads: %d/%d, Regions: %d, Block: %d, Factor: %d\n", regions * LEN, nthreads, regions, block_size, factor);
+
     #pragma omp barrier
 
-
-
-    int regions = nthreads / 26;
-    int block_size = fsize / regions;
-    int c = 0;
-
-    int factor = nthreads / 26;
-
-    int letter;
-
-    printf ("Threads: %d/%d, Regions: %d, Block: %d, Factor: %d\n", regions * 26, nthreads, regions, block_size, factor);
-
     t = omp_get_wtime();
-    #pragma omp parallel shared(str, block_size, final_count) private(count, th_id, c, letter) num_threads(nthreads)
+    #pragma omp parallel shared(str, block_size, final_count) private(count, th_id, c, c1, c2, c3, c4, letter) num_threads(nthreads)
     {
         th_id = omp_get_thread_num();
-        letter = th_id / factor + 97;
+        letter = th_id / factor + SMALL_A;
         int start = (th_id % factor) * block_size;
 
-        // printf ("id: %d, letter: %d (%c), start: %d\n", th_id, letter, letter, start);
-
         // #pragma vector aligned
-        #pragma ivdep
-        __assume_aligned(str, 64);
+        // #pragma ivdep
+        __assume_aligned(str, ALIGN);
+        // for (int i = start; i < min (start + block_size, fsize); i += 4)
+        #pragma unroll(4)
         for (int i = start; i < start + block_size; i++)
         {
-            // c = (int)((int)str[i] & letter);
+            c += (str[i] == letter) ? 1 : 0;
 
-            // c += OP (str[i], letter);
-            // c = c + (int)-AP(F((int)str[i], letter)) ;
 
-            // printf ("%d  %d  %d\n", str[i], letter, -AP(F((int)str[i], letter)));
+            // #pragma vector aligned
+            // c += cmp(str[i], letter);
+            // c1 = (str[i] == letter) ? c1 + 1 : c1;
+            // c2 = (str[i + 1] == letter) ? c2 + 1 : c2;
+            // c3 = (str[i + 2] == letter) ? c3 + 1 : c3;
+            // c4 = (str[i + 3] == letter) ? c4 + 1 : c4;
 
-            // int b = 0;
-            // b = b + (int)-AP(F((int)str[i], letter));
+            // cmp(&c, str[start:block_size], letter);
 
-            // printf ("RES: %d\n", b);
-            // break;
-            #pragma vector aligned
-            c = (str[i] == letter) ? c + 1 : c;
-            // if ((int) str[i] == letter)
-                // c++;
+            // c1 = (str[i] == letter) ? 1 : 0;
+            // c2 = (str[i + 1] == letter) ? 1 : 0;
+            // c3 = (str[i + 2] == letter) ? 1 : 0;
+            // c4 = (str[i + 3] == letter) ? 1 : 0;
+            //
+            // c += (c1 + c2 + c3 + c4);
         }
 
-        // printf ("letter: %c, c: %d\n", letter, c);
         #pragma omp critical
-        final_count[letter - 97] += c;
+        final_count[letter - SMALL_A] += c;
     }
     printf("Time: %f ms\n", (omp_get_wtime() - t) * 1000);
 
-    printf ("\n%d\n", th_id);
-    for (int i = 0; i < 26; i++)
-    {
-        printf("%c = %d\n", i+97, final_count[i]);
-    }
+    #pragma omp parallel
+    #pragma omp master
 
+    for (int i = 0; i < LEN; i++)
+        printf("%c = %d\n", i + SMALL_A, final_count[i]);
 
     _mm_free (str);
 
