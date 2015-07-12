@@ -22,12 +22,6 @@
     #include <xmmintrin.h>
 #endif
 
-// __attribute__((vector))
-// void cmp(int* count, char c, int letter)
-// {
-//     *count += (c == letter) ? 1 : 0;
-// }
-
 int main(int argc, char* argv[])
 {
     printf ("Character count (2)\n");
@@ -108,54 +102,21 @@ int main(int argc, char* argv[])
         start = (th_id % factor) * block_size;
         c = 0;
 
-        // printf("letter : %c, id: %d, s: %d\n", letter, th_id, start);
-
         for (int i = start; i < min (start + block_size, fsize); i += tile)
         {
-            // printf ("tile %d\n", letter);
-            // char* restrict tmp = &str[i];
-
-            // #pragma vector aligned
-            // printf ("MAX: %d %d\n", i + tile, i + block_size);
-
             #if MIC
                 #pragma unroll(4)
-                // _MM_HINT_T0
-                // #pragma prefetch str:0:16
             #endif
             __assume_aligned(str, ALIGN);
             for (int j = i; j < min (i + tile, start + block_size); j++)
-            // for (int j = 0; j < tile; j++)
             {
-                // if (j == i)
-                // {
-                //     printf ("loop len: %d %d\n", i, min (i + tile, start + block_size));
-                // }
-
-                // c += (str[j] == letter) ? 1 : 0;
                 if (str[j] == letter)
-                // if (tmp[i] == letter)
                     c++;
-                // if ((int)letter == (int)str[j])
-                    // c;
-
-
-
-                // c++;
-                // printf ("%c ", str[j]);
             }
-            // break;
-
-            // printf ("EXIT: %d\n", j);
         }
 
-        // #pragma omp barrier
-        // #pragma omp critical
         #pragma omp atomic
         final_count[letter - SMALL_A] += c;
-        // #pragma omp flush(c)
-        // printf ("C: %d\n", c);
-        // printf ("SIEMA: %c = %d\n", letter, c);
     }
     printf("Time: %f ms\n", (omp_get_wtime() - t) * 1000);
 
