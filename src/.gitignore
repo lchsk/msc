@@ -1,0 +1,4 @@
+*.optrpt
+*send.sh
+*.o
+*.out

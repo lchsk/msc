@@ -1,0 +1,19 @@
+CC = nvcc
+DEBUG =
+CFLAGS =
+
+LIBS = -I /hepstore/mlechowski/cuda-6.5/samples/common/inc/
+
+STD =
+
+FILES = deviceQuery.cpp
+
+OUT = app
+
+all: $(OUT)
+
+$(OUT):
+	$(CC) $(FILES) -o $(OUT) $(CFLAGS) $(LIBS) $(STD)
+
+clean:
+	rm -rf *o $(OUT)

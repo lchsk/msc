@@ -1,0 +1,10 @@
+12-07-2015
+
+Cuda: simple version from NVIDIA examples
+    - executed on a single M207
+    - WorkgroupSize= 1024 threads/block
+    - doubles
+    - no warm-up
+
+
+for xeon: tile=64 or 32
